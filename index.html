@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>PAWS VS ROBOTS</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- =====================================================
+     COVER
+===================================================== -->
+
+<section id="coverScreen" class="screen cover-screen">
+
+    <div class="fireflies"></div>
+    <div class="floating-leaves"></div>
+
+    <div class="cover-content">
+
+        <p class="cover-small">WELCOME TO THE MISSION</p>
+
+        <h1>PAWS VS ROBOTS</h1>
+
+        <p class="cover-subtitle">
+            Save the animals. Master the Passive Voice.
+        </p>
+
+        <button class="play-button" onclick="showMenu()">
+            PLAY
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     MAIN MENU
+===================================================== -->
+
+<section id="menuScreen" class="screen menu-screen hidden">
+
+    <div class="menu-container">
+
+        <div class="menu-title">
+            <h1>MISSION CENTER</h1>
+            <p>Choose your mission and prepare to save the animals.</p>
+        </div>
+
+
+        <div class="menu-grid">
+
+            <!-- NEW GAME -->
+
+            <div class="menu-card" onclick="showNameScreen()">
+
+                <div class="menu-icon">
+
+                    <svg viewBox="0 0 100 100">
+                        <path d="M20 48 L50 22 L80 48 V78 H60 V58 H40 V78 H20 Z"/>
+                        <path d="M50 32 V52 M40 42 H60"/>
+                    </svg>
+
+                </div>
+
+                <h2>PLAY</h2>
+
+                <button>NEW GAME</button>
+
+                <p>Start a new mission</p>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="menu-card" onclick="showStatistics()">
+
+                <div class="menu-icon">
+
+                    <svg viewBox="0 0 100 100">
+                        <rect x="18" y="55" width="12" height="25"/>
+                        <rect x="43" y="40" width="12" height="40"/>
+                        <rect x="68" y="20" width="12" height="60"/>
+                        <path d="M15 28 L35 40 L55 25 L82 12"/>
+                    </svg>
+
+                </div>
+
+                <h2>STAT</h2>
+
+                <button>STATISTICS</button>
+
+                <p>Check your results</p>
+
+            </div>
+
+
+            <!-- SAVED DATA -->
+
+            <div class="menu-card" onclick="showSaved()">
+
+                <div class="menu-icon">
+
+                    <svg viewBox="0 0 100 100">
+                        <path d="M20 20 H65 L80 35 V80 H20 Z"/>
+                        <path d="M30 20 V45 H65 V20"/>
+                        <path d="M32 58 H68 V75 H32 Z"/>
+                    </svg>
+
+                </div>
+
+                <h2>DATA</h2>
+
+                <button>SAVED DATA</button>
+
+                <p>See your previous games</p>
+
+            </div>
+
+
+            <!-- DIFFICULTY -->
+
+            <div class="menu-card" onclick="showDifficulty()">
+
+                <div class="menu-icon">
+
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="30"/>
+                        <path d="M50 30 V50 L65 62"/>
+                        <path d="M27 20 L35 12"/>
+                        <path d="M73 20 L65 12"/>
+                    </svg>
+
+                </div>
+
+                <h2>LEVEL</h2>
+
+                <button>DIFFICULTY</button>
+
+                <p>Choose your challenge</p>
+
+            </div>
+
+
+            <!-- LEADERBOARD -->
+
+            <div class="menu-card" onclick="showLeaderboard()">
+
+                <div class="menu-icon">
+
+                    <svg viewBox="0 0 100 100">
+                        <path d="M30 18 H70 V55 C70 75 50 84 50 84 C50 84 30 75 30 55 Z"/>
+                        <path d="M30 28 H18 V42 C18 53 25 58 34 58"/>
+                        <path d="M70 28 H82 V42 C82 53 75 58 66 58"/>
+                        <path d="M40 88 H60"/>
+                    </svg>
+
+                </div>
+
+                <h2>TOP</h2>
+
+                <button>LEADERBOARD</button>
+
+                <p>See the best players</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     DIFFICULTY
+===================================================== -->
+
+<section id="difficultyScreen" class="screen secondary-screen hidden">
+
+    <div class="panel">
+
+        <h1>CHOOSE DIFFICULTY</h1>
+
+        <p>Select your challenge level.</p>
+
+        <div class="difficulty-grid">
+
+            <button onclick="setDifficulty('easy')">
+                EASY
+                <small>5 QUESTIONS</small>
+            </button>
+
+            <button onclick="setDifficulty('normal')">
+                NORMAL
+                <small>8 QUESTIONS</small>
+            </button>
+
+            <button onclick="setDifficulty('medium')">
+                MEDIUM
+                <small>10 QUESTIONS</small>
+            </button>
+
+            <button onclick="setDifficulty('hard')">
+                HARD
+                <small>12 QUESTIONS</small>
+            </button>
+
+            <button onclick="setDifficulty('extreme')">
+                EXTREME
+                <small>15 QUESTIONS</small>
+            </button>
+
+        </div>
+
+        <button class="back-button" onclick="showMenu()">
+            BACK
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     NAME
+===================================================== -->
+
+<section id="nameScreen" class="screen secondary-screen hidden">
+
+    <div class="panel">
+
+        <h1>PLAYER PROFILE</h1>
+
+        <p>Enter your name before starting the mission.</p>
+
+        <input
+            id="playerNameInput"
+            type="text"
+            maxlength="20"
+            placeholder="Your name"
+        >
+
+        <button class="main-action" onclick="continueToPets()">
+            CONTINUE
+        </button>
+
+        <button class="back-button" onclick="showMenu()">
+            BACK
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     PET SELECTION
+===================================================== -->
+
+<section id="petScreen" class="screen pet-screen hidden">
+
+    <div class="pet-title">
+
+        <h1>CHOOSE YOUR COMPANION</h1>
+
+        <p>Choose an animal for your mission.</p>
+
+    </div>
+
+
+    <div class="pets-grid">
+
+
+        <!-- DOG -->
+
+        <div class="pet-card" onclick="selectPet('Dog')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <circle cx="100" cy="105" r="65" fill="#b9783c"/>
+
+                    <path d="M45 65 L25 25 L75 48 Z" fill="#814b2a"/>
+                    <path d="M155 65 L175 25 L125 48 Z" fill="#814b2a"/>
+
+                    <circle cx="78" cy="100" r="8" fill="#17251e"/>
+                    <circle cx="122" cy="100" r="8" fill="#17251e"/>
+
+                    <ellipse cx="100" cy="125" rx="19" ry="14" fill="#53331f"/>
+
+                    <path d="M91 140 Q100 148 109 140"
+                          stroke="#17251e"
+                          stroke-width="5"
+                          fill="none"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">DOG</div>
+
+        </div>
+
+
+        <!-- CAT -->
+
+        <div class="pet-card" onclick="selectPet('Cat')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <path d="M48 72 L50 28 L80 50
+                             Q100 42 120 50
+                             L150 28 L152 72
+                             Q170 115 150 145
+                             Q125 170 100 170
+                             Q75 170 50 145
+                             Q30 115 48 72Z"
+                          fill="#c98f52"/>
+
+                    <circle cx="78" cy="100" r="7" fill="#17251e"/>
+                    <circle cx="122" cy="100" r="7" fill="#17251e"/>
+
+                    <path d="M94 120 L106 120 L100 128 Z"
+                          fill="#633c2c"/>
+
+                    <path d="M100 128 Q100 140 90 143"
+                          stroke="#633c2c"
+                          stroke-width="4"
+                          fill="none"/>
+
+                    <path d="M100 128 Q100 140 110 143"
+                          stroke="#633c2c"
+                          stroke-width="4"
+                          fill="none"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">CAT</div>
+
+        </div>
+
+
+        <!-- RABBIT -->
+
+        <div class="pet-card" onclick="selectPet('Rabbit')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <ellipse cx="75" cy="55"
+                             rx="22" ry="55"
+                             fill="#d6b99b"/>
+
+                    <ellipse cx="125" cy="55"
+                             rx="22" ry="55"
+                             fill="#d6b99b"/>
+
+                    <ellipse cx="75" cy="55"
+                             rx="10" ry="40"
+                             fill="#c68e8e"/>
+
+                    <ellipse cx="125" cy="55"
+                             rx="10" ry="40"
+                             fill="#c68e8e"/>
+
+                    <circle cx="100" cy="120" r="55"
+                            fill="#d6b99b"/>
+
+                    <circle cx="82" cy="115" r="7" fill="#17251e"/>
+                    <circle cx="118" cy="115" r="7" fill="#17251e"/>
+
+                    <path d="M94 130 L106 130 L100 138 Z"
+                          fill="#8d5d5d"/>
+
+                    <path d="M100 138 Q100 148 91 150"
+                          stroke="#6b493e"
+                          stroke-width="4"
+                          fill="none"/>
+
+                    <path d="M100 138 Q100 148 109 150"
+                          stroke="#6b493e"
+                          stroke-width="4"
+                          fill="none"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">RABBIT</div>
+
+        </div>
+
+
+        <!-- TIGER -->
+
+        <div class="pet-card" onclick="selectPet('Tiger')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <circle cx="100" cy="105" r="65"
+                            fill="#d99027"/>
+
+                    <path d="M45 65 L65 35 L82 55"
+                          fill="#d99027"/>
+
+                    <path d="M155 65 L135 35 L118 55"
+                          fill="#d99027"/>
+
+                    <path d="M60 75 L82 95"
+                          stroke="#2a241c"
+                          stroke-width="8"/>
+
+                    <path d="M140 75 L118 95"
+                          stroke="#2a241c"
+                          stroke-width="8"/>
+
+                    <path d="M95 45 V82"
+                          stroke="#2a241c"
+                          stroke-width="8"/>
+
+                    <circle cx="78" cy="105" r="8" fill="#17251e"/>
+                    <circle cx="122" cy="105" r="8" fill="#17251e"/>
+
+                    <ellipse cx="100" cy="130" rx="18" ry="13"
+                             fill="#34271d"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">TIGER</div>
+
+        </div>
+
+
+        <!-- CROCODILE -->
+
+        <div class="pet-card" onclick="selectPet('Crocodile')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <ellipse cx="100" cy="120"
+                             rx="75" ry="45"
+                             fill="#739d55"/>
+
+                    <ellipse cx="70" cy="95"
+                             rx="20" ry="18"
+                             fill="#739d55"/>
+
+                    <ellipse cx="130" cy="95"
+                             rx="20" ry="18"
+                             fill="#739d55"/>
+
+                    <circle cx="70" cy="92" r="7" fill="#18241d"/>
+                    <circle cx="130" cy="92" r="7" fill="#18241d"/>
+
+                    <path d="M55 125 Q100 145 145 125"
+                          stroke="#263b29"
+                          stroke-width="7"
+                          fill="none"/>
+
+                    <path d="M65 128 L70 140 M85 133 L90 145
+                             M115 133 L110 145 M135 128 L130 140"
+                          stroke="#f2e4bd"
+                          stroke-width="5"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">CROCODILE</div>
+
+        </div>
+
+
+        <!-- HEDGEHOG -->
+
+        <div class="pet-card" onclick="selectPet('Hedgehog')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <path d="M45 135
+                             Q40 65 100 45
+                             Q160 55 160 135
+                             Q130 165 90 160
+                             Q60 155 45 135Z"
+                          fill="#756044"/>
+
+                    <circle cx="125" cy="112" r="38"
+                            fill="#c58d58"/>
+
+                    <circle cx="135" cy="105" r="7"
+                            fill="#17251e"/>
+
+                    <circle cx="153" cy="120" r="10"
+                            fill="#392a22"/>
+
+                    <path d="M60 75 L78 105
+                             M78 62 L92 100
+                             M100 55 L105 95"
+                          stroke="#423527"
+                          stroke-width="9"
+                          stroke-linecap="round"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">HEDGEHOG</div>
+
+        </div>
+
+
+        <!-- PANDA -->
+
+        <div class="pet-card" onclick="selectPet('Panda')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <circle cx="100" cy="105" r="65"
+                            fill="#f1eee0"/>
+
+                    <circle cx="55" cy="55" r="25"
+                            fill="#202820"/>
+
+                    <circle cx="145" cy="55" r="25"
+                            fill="#202820"/>
+
+                    <ellipse cx="75" cy="105"
+                             rx="18" ry="25"
+                             fill="#202820"
+                             transform="rotate(-30 75 105)"/>
+
+                    <ellipse cx="125" cy="105"
+                             rx="18" ry="25"
+                             fill="#202820"
+                             transform="rotate(30 125 105)"/>
+
+                    <circle cx="78" cy="106" r="6"
+                            fill="#f1eee0"/>
+
+                    <circle cx="122" cy="106" r="6"
+                            fill="#f1eee0"/>
+
+                    <ellipse cx="100" cy="132"
+                             rx="16" ry="11"
+                             fill="#202820"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">PANDA</div>
+
+        </div>
+
+
+        <!-- FOX -->
+
+        <div class="pet-card" onclick="selectPet('Fox')">
+
+            <div class="animal-circle">
+
+                <svg class="animal-svg" viewBox="0 0 200 200">
+
+                    <path d="M45 75 L50 30 L82 55
+                             Q100 47 118 55
+                             L150 30 L155 75
+                             Q170 120 145 150
+                             Q125 170 100 170
+                             Q75 170 55 150
+                             Q30 120 45 75Z"
+                          fill="#d77b31"/>
+
+                    <path d="M55 130 Q100 160 145 130
+                             Q125 170 100 170
+                             Q75 170 55 130Z"
+                          fill="#f1dfbd"/>
+
+                    <circle cx="78" cy="105" r="7"
+                            fill="#17251e"/>
+
+                    <circle cx="122" cy="105" r="7"
+                            fill="#17251e"/>
+
+                    <path d="M92 125 L108 125 L100 135 Z"
+                          fill="#28231d"/>
+
+                </svg>
+
+            </div>
+
+            <div class="pet-name">FOX</div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     GAME
+===================================================== -->
+
+<section id="gameScreen" class="screen game-screen hidden">
+
+    <div class="game-top">
+
+        <div class="timer-label">TIME</div>
+
+        <div class="timer-bar">
+            <div id="timerFill"></div>
+        </div>
+
+    </div>
+
+
+    <div class="game-info">
+
+        <span id="playerDisplay">PLAYER</span>
+
+        <span id="levelDisplay">NORMAL</span>
+
+        <span id="questionDisplay">QUESTION 1</span>
+
+        <span id="livesDisplay">LIVES: 3</span>
+
+        <span id="scoreDisplay">SCORE: 0</span>
+
+    </div>
+
+
+    <main class="question-area">
+
+        <div id="category" class="category">
+            PASSIVE VOICE
+        </div>
+
+        <h1 id="questionText">
+            Question
+        </h1>
+
+        <div id="imageContainer" class="question-image hidden">
+            <img id="questionImage" src="" alt="Challenge">
+        </div>
+
+        <div id="answers" class="answers"></div>
+
+        <div id="feedback"></div>
+
+    </main>
+
+</section>
+
+
+<!-- =====================================================
+     RESULT
+===================================================== -->
+
+<section id="resultScreen" class="screen secondary-screen hidden">
+
+    <div class="panel result-panel">
+
+        <h1>MISSION COMPLETE</h1>
+
+        <div class="result-score">
+            <span id="finalScore">0</span>
+            <small>POINTS</small>
+        </div>
+
+        <p id="finalCorrect"></p>
+        <p id="finalAccuracy"></p>
+        <p id="finalStreak"></p>
+
+        <h2 id="finalRank"></h2>
+
+        <p id="finalMessage"></p>
+
+        <div class="result-buttons">
+
+            <button class="main-action" onclick="startGame()">
+                PLAY AGAIN
+            </button>
+
+            <button class="back-button" onclick="showMenu()">
+                MENU
+            </button>
+
+            <button class="back-button" onclick="showLeaderboard()">
+                LEADERBOARD
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     STATISTICS
+===================================================== -->
+
+<section id="statisticsScreen" class="screen secondary-screen hidden">
+
+    <div class="panel">
+
+        <h1>STATISTICS</h1>
+
+        <div id="statisticsContent"></div>
+
+        <button class="back-button" onclick="showMenu()">
+            BACK
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     SAVED DATA
+===================================================== -->
+
+<section id="savedScreen" class="screen secondary-screen hidden">
+
+    <div class="panel">
+
+        <h1>SAVED DATA</h1>
+
+        <div id="savedContent"></div>
+
+        <button class="back-button" onclick="showMenu()">
+            BACK
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =====================================================
+     LEADERBOARD
+===================================================== -->
+
+<section id="leaderboardScreen" class="screen secondary-screen hidden">
+
+    <div class="panel">
+
+        <h1>LEADERBOARD</h1>
+
+        <div id="leaderboardContent"></div>
+
+        <button class="back-button" onclick="showMenu()">
+            BACK
+        </button>
+
+    </div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
