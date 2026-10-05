@@ -3,19 +3,19 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 HOST = "localhost"
 PORT = 8000
 
-server = HTTPServer(
+servidor = HTTPServer(
     (HOST, PORT),
     SimpleHTTPRequestHandler
 )
 
 print("======================================")
-print("          PAWS VS ROBOTS")
+print("       ENGLISH ESCAPE ROOM")
 print("======================================")
 print()
-print("Server started at:")
+print("Servidor iniciado en:")
 print("http://localhost:8000")
 print()
-print("Press CTRL + C to stop.")
+print("Presioná Ctrl + C para detenerlo.")
 print()
 
-server.serve_forever()
+servidor.serve_forever()
