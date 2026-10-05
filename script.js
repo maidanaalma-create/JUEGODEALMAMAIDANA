@@ -1,749 +1,964 @@
-/* =====================================================
+/* =========================================================
    PAWS VS ROBOTS
-   Passive Voice English Game
-===================================================== */
+   SCRIPT
+========================================================= */
 
 
-/* =====================================================
-   GAME VARIABLES
-===================================================== */
+/* =========================================================
+   VARIABLES
+========================================================= */
 
 let playerName = "";
-let difficulty = "normal";
+
 let selectedPet = "";
 
+let selectedPetImage = "";
+
+let difficulty = "normal";
+
+let questions = [];
+
 let currentQuestion = 0;
+
 let score = 0;
+
+let correctAnswers = 0;
+
+let totalQuestions = 0;
+
 let lives = 3;
 
-let streak = 0;
-let bestStreak = 0;
+let timeLeft = 60;
 
-let gameQuestions = [];
+let timer = null;
 
-let timer = 60;
-let timerInterval = null;
+let gameEnded = false;
 
-let totalCorrect = 0;
-let totalAnswered = 0;
+let canAnswer = true;
 
 
-/* =====================================================
-   QUESTION BANK
-===================================================== */
+/* =========================================================
+   QUESTIONS
+========================================================= */
 
-const questions = [
+const questionPool = [
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "Choose the correct passive sentence:",
-        options: [
-            "The cake was made by Anna.",
-            "Anna was make the cake.",
-            "The cake made Anna.",
-            "Anna has make the cake."
-        ],
-        answer: 0
+        question: "Complete: The cake ___ by Anna.",
+        answers: ["is made"]
     },
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The classroom _____ every morning.",
-        options: [
-            "cleans",
-            "is cleaned",
-            "cleaned",
-            "is cleaning"
-        ],
-        answer: 1
+        question: "Complete: The door ___ by Tom.",
+        answers: ["is opened"]
     },
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The windows _____ yesterday.",
-        options: [
-            "were cleaned",
-            "are cleaning",
-            "clean",
-            "was clean"
-        ],
-        answer: 0
+        question: "Complete: The ball ___ by John.",
+        answers: ["is kicked"]
     },
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The book _____ by millions of people.",
-        options: [
-            "reads",
-            "is read",
-            "read",
-            "reading"
-        ],
-        answer: 1
+        question: "Complete: The book ___ by Mary.",
+        answers: ["is read"]
     },
 
     {
-        type: "truefalse",
-        category: "TRUE OR FALSE",
-        question: "\"The car was repaired by the mechanic\" is passive voice.",
-        options: [
-            "TRUE",
-            "FALSE"
-        ],
-        answer: 0
-    },
-
-
-    /* =================================================
-       IMAGE QUESTIONS
-    ================================================= */
-
-    {
-        type: "image",
-        category: "IMAGE CHALLENGE",
-        image: "caperusita.jpg",
-        question: "What is happening in this picture?",
-        options: [
-            "The girl is being followed.",
-            "The girl follows the wolf.",
-            "The wolf is cooking.",
-            "The girl is driving."
-        ],
-        answer: 0
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The room ___ every day.",
+        answers: ["is cleaned"]
     },
 
     {
-        type: "image",
-        category: "IMAGE CHALLENGE",
-        image: "family.jpg",
-        question: "Choose the correct passive sentence:",
-        options: [
-            "The family is being photographed.",
-            "The family photographs the camera.",
-            "The camera photographs itself.",
-            "The family was photograph."
-        ],
-        answer: 0
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The food ___ by Mom.",
+        answers: ["is cooked"]
     },
 
     {
-        type: "image",
-        category: "IMAGE CHALLENGE",
-        image: "herida.jpg",
-        question: "Choose the correct passive sentence:",
-        options: [
-            "The wound is being treated.",
-            "The wound treats the doctor.",
-            "The doctor is being wound.",
-            "The wound treating the doctor."
-        ],
-        answer: 0
-    },
-
-
-    /* =================================================
-       ORDER WORDS
-    ================================================= */
-
-    {
-        type: "order",
-        category: "WORD ORDER",
-        question: "Put the words in the correct order:",
-        words: [
-            "was",
-            "The",
-            "letter",
-            "written",
-            "yesterday."
-        ],
-        answer: "The letter was written yesterday."
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The dog ___ by the boy.",
+        answers: ["is washed"]
     },
 
     {
-        type: "order",
-        category: "WORD ORDER",
-        question: "Put the words in the correct order:",
-        words: [
-            "is",
-            "The",
-            "car",
-            "washed",
-            "every",
-            "week."
-        ],
-        answer: "The car is washed every week."
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The picture ___ by Sarah.",
+        answers: ["is painted"]
     },
 
 
-    /* =================================================
-       WRITING
-    ================================================= */
+    /* WAS / WERE */
 
     {
-        type: "writing",
-        category: "TRANSFORMATION",
-        question: "Transform into passive voice: \"People speak English around the world.\"",
-        answer: "English is spoken around the world."
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The cake ___ yesterday.",
+        answers: ["was made"]
     },
 
     {
-        type: "writing",
-        category: "TRANSFORMATION",
-        question: "Transform into passive voice: \"The chef cooked the meal.\"",
-        answer: "The meal was cooked by the chef."
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The windows ___ yesterday.",
+        answers: ["were cleaned"]
+    },
+
+    {
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The door ___ this morning.",
+        answers: ["was opened"]
+    },
+
+    {
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "Complete: The toys ___ yesterday.",
+        answers: ["were cleaned"]
     },
 
 
-    /* =================================================
-       LISTENING
-    ================================================= */
+    /* COLORS */
+
+    {
+        type: "text",
+        category: "COLORS",
+        question: "What color is made when RED and YELLOW are mixed?",
+        answers: ["orange"]
+    },
+
+    {
+        type: "text",
+        category: "COLORS",
+        question: "What color is made when BLUE and YELLOW are mixed?",
+        answers: ["green"]
+    },
+
+    {
+        type: "text",
+        category: "COLORS",
+        question: "What color is made when BLUE and RED are mixed?",
+        answers: ["purple"]
+    },
+
+    {
+        type: "text",
+        category: "COLORS",
+        question: "What color is made when RED and WHITE are mixed?",
+        answers: ["pink"]
+    },
+
+    {
+        type: "text",
+        category: "COLORS",
+        question: "What color is made when BLACK and WHITE are mixed?",
+        answers: ["gray", "grey"]
+    },
+
+
+    /* VOCABULARY */
+
+    {
+        type: "text",
+        category: "VOCABULARY",
+        question: "What is the English word for GATO?",
+        answers: ["cat"]
+    },
+
+    {
+        type: "text",
+        category: "VOCABULARY",
+        question: "What is the English word for PERRO?",
+        answers: ["dog"]
+    },
+
+    {
+        type: "text",
+        category: "VOCABULARY",
+        question: "What is the English word for CASA?",
+        answers: ["house"]
+    },
+
+    {
+        type: "text",
+        category: "VOCABULARY",
+        question: "What is the English word for LIBRO?",
+        answers: ["book"]
+    },
+
+    {
+        type: "text",
+        category: "VOCABULARY",
+        question: "What is the English word for ESCUELA?",
+        answers: ["school"]
+    },
+
+
+    /* EASY VERBS */
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "What is the past of GO?",
+        answers: ["went"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "What is the past of EAT?",
+        answers: ["ate"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "What is the past of PLAY?",
+        answers: ["played"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "What is the past of WATCH?",
+        answers: ["watched"]
+    },
+
+
+    /* TYPING */
+
+    {
+        type: "typing",
+        category: "TYPING",
+        question: "Type this sentence: I like cats.",
+        answers: ["i like cats"]
+    },
+
+    {
+        type: "typing",
+        category: "TYPING",
+        question: "Type this sentence: My dog is happy.",
+        answers: ["my dog is happy"]
+    },
+
+
+    /* EASY GRAMMAR */
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "Complete: I ___ a student.",
+        answers: ["am"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "Complete: She ___ my friend.",
+        answers: ["is"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "Complete: They ___ happy.",
+        answers: ["are"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "Complete: He ___ a dog.",
+        answers: ["has"]
+    },
+
+    {
+        type: "text",
+        category: "EASY ENGLISH",
+        question: "Complete: I ___ pizza.",
+        answers: ["like"]
+    },
+
+
+    /* LISTENING */
 
     {
         type: "listening",
         category: "LISTENING",
-        question: "Listen to the sentence and choose what you hear.",
-        speech: "The house was built in 1990.",
-        options: [
-            "The house was built in 1990.",
-            "The house is building in 1990.",
-            "The house built 1990.",
-            "The house was build in 1990."
-        ],
-        answer: 0
+        question: "Listen and write the sentence you hear.",
+        sentence: "The cake is made.",
+        answers: ["the cake is made"]
     },
 
     {
         type: "listening",
         category: "LISTENING",
-        question: "Listen carefully and choose the correct sentence.",
-        speech: "The food is prepared every morning.",
-        options: [
-            "The food is prepared every morning.",
-            "The food prepares every morning.",
-            "The food was prepare every morning.",
-            "The food is preparing every morning."
-        ],
-        answer: 0
+        question: "Listen and write the sentence you hear.",
+        sentence: "The door is opened.",
+        answers: ["the door is opened"]
+    },
+
+    {
+        type: "listening",
+        category: "LISTENING",
+        question: "Listen and write the sentence you hear.",
+        sentence: "The room is cleaned.",
+        answers: ["the room is cleaned"]
     },
 
 
-    /* =================================================
-       MORE QUESTIONS
-    ================================================= */
+    /* PASSIVE VERY EASY */
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The emails _____ every afternoon.",
-        options: [
-            "are sent",
-            "send",
-            "sent",
-            "is sending"
-        ],
-        answer: 0
+        question: "The car ___ washed.",
+        answers: ["is"]
     },
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The bridge _____ last year.",
-        options: [
-            "was built",
-            "is build",
-            "built",
-            "was building"
-        ],
-        answer: 0
+        question: "The toys ___ cleaned.",
+        answers: ["are"]
     },
 
     {
-        type: "multiple",
+        type: "text",
         category: "PASSIVE VOICE",
-        question: "The homework _____ by the students.",
-        options: [
-            "is completed",
-            "complete",
-            "completes",
-            "is completing"
-        ],
-        answer: 0
+        question: "The cake ___ made yesterday.",
+        answers: ["was"]
     },
 
     {
-        type: "truefalse",
-        category: "TRUE OR FALSE",
-        question: "\"The window was broken\" is an example of passive voice.",
-        options: [
-            "TRUE",
-            "FALSE"
-        ],
-        answer: 0
-    },
-
-    {
-        type: "truefalse",
-        category: "TRUE OR FALSE",
-        question: "\"Tom eats the cake\" is passive voice.",
-        options: [
-            "TRUE",
-            "FALSE"
-        ],
-        answer: 1
+        type: "text",
+        category: "PASSIVE VOICE",
+        question: "The books ___ read yesterday.",
+        answers: ["were"]
     }
 
 ];
 
 
-/* =====================================================
-   DIFFICULTY
-===================================================== */
+/* =========================================================
+   SHOW SCREEN
+========================================================= */
 
-const difficultyQuestions = {
-    easy: 5,
-    normal: 8,
-    medium: 10,
-    hard: 12,
-    extreme: 15
-};
+function showScreen(id) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.remove("active");
+
+        });
 
 
-/* =====================================================
-   SCREEN CONTROL
-===================================================== */
+    const screen =
+        document.getElementById(id);
 
-function hideAllScreens() {
 
-    document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.add("hidden");
-    });
+    if (screen) {
+
+        screen.classList.add("active");
+
+    }
 }
 
+
+/* =========================================================
+   MENU
+========================================================= */
 
 function showMenu() {
 
-    hideAllScreens();
+    stopTimer();
 
-    document.getElementById("menuScreen")
-        .classList.remove("hidden");
+    showScreen("menuScreen");
 }
 
 
-function showNameScreen() {
+/* =========================================================
+   INFO
+========================================================= */
 
-    hideAllScreens();
+function showInfo() {
 
-    document.getElementById("nameScreen")
-        .classList.remove("hidden");
+    showScreen("infoScreen");
 }
 
+
+/* =========================================================
+   DIFFICULTY
+========================================================= */
 
 function showDifficulty() {
 
-    hideAllScreens();
+    const text =
+        document.getElementById(
+            "currentDifficulty"
+        );
 
-    document.getElementById("difficultyScreen")
-        .classList.remove("hidden");
+
+    if (text) {
+
+        text.textContent =
+            difficulty.toUpperCase();
+
+    }
+
+
+    showScreen("difficultyScreen");
 }
 
-
-function showStatistics() {
-
-    hideAllScreens();
-
-    document.getElementById("statisticsScreen")
-        .classList.remove("hidden");
-
-    loadStatistics();
-}
-
-
-function showSaved() {
-
-    hideAllScreens();
-
-    document.getElementById("savedScreen")
-        .classList.remove("hidden");
-
-    loadSaved();
-}
-
-
-function showLeaderboard() {
-
-    hideAllScreens();
-
-    document.getElementById("leaderboardScreen")
-        .classList.remove("hidden");
-
-    loadLeaderboard();
-}
-
-
-/* =====================================================
-   DIFFICULTY
-===================================================== */
 
 function setDifficulty(level) {
 
     difficulty = level;
 
-    showNameScreen();
+
+    localStorage.setItem(
+        "pawsDifficulty",
+        difficulty
+    );
+
+
+    const text =
+        document.getElementById(
+            "currentDifficulty"
+        );
+
+
+    if (text) {
+
+        text.textContent =
+            difficulty.toUpperCase();
+
+    }
 }
 
 
-/* =====================================================
+/* =========================================================
    NAME
-===================================================== */
+========================================================= */
+
+function showNameScreen() {
+
+    showScreen("nameScreen");
+
+
+    setTimeout(() => {
+
+        const input =
+            document.getElementById(
+                "playerNameInput"
+            );
+
+
+        if (input) {
+
+            input.focus();
+
+        }
+
+    }, 300);
+}
+
 
 function continueToPets() {
 
     const input =
-        document.getElementById("playerNameInput");
+        document.getElementById(
+            "playerNameInput"
+        );
 
-    playerName = input.value.trim();
 
-    if (!playerName) {
+    const name =
+        input.value.trim();
+
+
+    if (name === "") {
+
+        input.placeholder =
+            "Write your name";
 
         input.focus();
-
-        input.style.borderColor = "#e05b4f";
 
         return;
     }
 
-    hideAllScreens();
 
-    document.getElementById("petScreen")
-        .classList.remove("hidden");
+    playerName = name;
+
+
+    showScreen("petScreen");
 }
 
 
-/* =====================================================
-   PET
-===================================================== */
+/* =========================================================
+   SELECT PET
+========================================================= */
 
-function selectPet(pet) {
+function selectPet(
+    name,
+    image
+) {
 
-    selectedPet = pet;
+    selectedPet = name;
 
-    startGame();
+    selectedPetImage = image;
+
+    startNewGame();
 }
 
 
-/* =====================================================
+/* =========================================================
    START GAME
-===================================================== */
+========================================================= */
 
-function startGame() {
-
-    clearInterval(timerInterval);
-
-    currentQuestion = 0;
+function startNewGame() {
 
     score = 0;
 
+    correctAnswers = 0;
+
+    currentQuestion = 0;
+
     lives = 3;
 
-    streak = 0;
+    timeLeft = 60;
 
-    bestStreak = 0;
+    gameEnded = false;
 
-    totalCorrect = 0;
-
-    totalAnswered = 0;
-
-    timer = 60;
+    canAnswer = true;
 
 
-    const amount =
-        difficultyQuestions[difficulty] || 8;
+    questions =
+        getQuestionsForDifficulty();
 
 
-    gameQuestions =
-        [...questions]
-        .sort(() => Math.random() - 0.5)
-        .slice(0, Math.min(amount, questions.length));
+    totalQuestions =
+        questions.length;
 
 
-    hideAllScreens();
-
-    document.getElementById("gameScreen")
-        .classList.remove("hidden");
-
-
-    document.getElementById("playerDisplay")
-        .textContent = playerName;
-
-    document.getElementById("levelDisplay")
-        .textContent =
-            difficulty.toUpperCase();
+    document.getElementById(
+        "gamePlayer"
+    ).textContent =
+        playerName;
 
 
-    updateGameInfo();
+    document.getElementById(
+        "gameLevel"
+    ).textContent =
+        difficulty.toUpperCase();
 
-    showQuestion();
+
+    updateScore();
+
+    updateLives();
+
+    updateTimer();
+
+
+    showScreen("gameScreen");
+
 
     startTimer();
+
+    showQuestion();
 }
 
 
-/* =====================================================
-   GAME INFO
-===================================================== */
+/* =========================================================
+   QUESTIONS PER DIFFICULTY
+========================================================= */
 
-function updateGameInfo() {
+function getQuestionsForDifficulty() {
 
-    document.getElementById("questionDisplay")
-        .textContent =
-            `QUESTION ${currentQuestion + 1}/${gameQuestions.length}`;
+    const shuffled =
+        shuffle(
+            [...questionPool]
+        );
 
-    document.getElementById("livesDisplay")
-        .textContent =
-            `LIVES: ${lives}`;
 
-    document.getElementById("scoreDisplay")
-        .textContent =
-            `SCORE: ${score}`;
+    let amount = 10;
+
+
+    if (difficulty === "easy") {
+
+        amount = 7;
+
+    }
+
+
+    if (difficulty === "normal") {
+
+        amount = 10;
+
+    }
+
+
+    if (difficulty === "medium") {
+
+        amount = 12;
+
+    }
+
+
+    if (difficulty === "hard") {
+
+        amount = 15;
+
+    }
+
+
+    if (difficulty === "extreme") {
+
+        amount = 18;
+
+    }
+
+
+    return shuffled.slice(
+        0,
+        Math.min(
+            amount,
+            shuffled.length
+        )
+    );
 }
 
 
-/* =====================================================
+/* =========================================================
+   SHUFFLE
+========================================================= */
+
+function shuffle(array) {
+
+    for (
+        let i = array.length - 1;
+        i > 0;
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            array[i],
+            array[j]
+        ] =
+        [
+            array[j],
+            array[i]
+        ];
+    }
+
+
+    return array;
+}
+
+
+/* =========================================================
    SHOW QUESTION
-===================================================== */
+========================================================= */
 
 function showQuestion() {
 
-    const q =
-        gameQuestions[currentQuestion];
+    if (gameEnded) {
 
-    const questionText =
-        document.getElementById("questionText");
+        return;
 
-    const category =
-        document.getElementById("category");
+    }
 
-    const answers =
-        document.getElementById("answers");
 
-    const feedback =
-        document.getElementById("feedback");
+    if (
+        currentQuestion >=
+        questions.length
+    ) {
+
+        endGame();
+
+        return;
+
+    }
+
+
+    canAnswer = true;
+
+
+    const question =
+        questions[
+            currentQuestion
+        ];
+
+
+    document.getElementById(
+        "questionNumber"
+    ).textContent =
+        `QUESTION ${currentQuestion + 1} / ${questions.length}`;
+
+
+    document.getElementById(
+        "questionCategory"
+    ).textContent =
+        question.category;
+
+
+    document.getElementById(
+        "questionText"
+    ).textContent =
+        question.question;
+
 
     const imageContainer =
-        document.getElementById("imageContainer");
+        document.getElementById(
+            "questionImageContainer"
+        );
 
-    const questionImage =
-        document.getElementById("questionImage");
+
+    const image =
+        document.getElementById(
+            "questionImage"
+        );
 
 
-    category.textContent = q.category;
+    const listenButton =
+        document.getElementById(
+            "listenButton"
+        );
 
-    questionText.textContent = q.question;
 
-    answers.innerHTML = "";
+    const answerInput =
+        document.getElementById(
+            "answerInput"
+        );
+
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
+
+
+    imageContainer.classList.remove(
+        "show"
+    );
+
+
+    image.src = "";
+
+
+    listenButton.classList.remove(
+        "show"
+    );
+
 
     feedback.textContent = "";
 
-    imageContainer.classList.add("hidden");
+
+    answerInput.value = "";
 
 
-    /* IMAGE */
+    answerInput.disabled = false;
 
-    if (q.type === "image") {
-
-        imageContainer.classList.remove("hidden");
-
-        questionImage.src = q.image;
-
-        questionImage.onerror = function() {
-
-            imageContainer.classList.add("hidden");
-
-        };
-    }
-
-
-    /* MULTIPLE / TRUE FALSE / IMAGE / LISTENING */
 
     if (
-        q.type === "multiple" ||
-        q.type === "truefalse" ||
-        q.type === "image" ||
-        q.type === "listening"
+        question.type ===
+        "listening"
     ) {
 
-        if (q.type === "listening") {
+        listenButton.classList.add(
+            "show"
+        );
 
-            speakSentence(q.speech);
-        }
 
-        q.options.forEach((option, index) => {
+        setTimeout(() => {
 
-            const button =
-                document.createElement("button");
+            playListening();
 
-            button.className = "answer-button";
+        }, 500);
 
-            button.textContent = option;
-
-            button.onclick = () =>
-                checkAnswer(index);
-
-            answers.appendChild(button);
-        });
     }
 
 
-    /* WORD ORDER */
-
-    if (q.type === "order") {
-
-        const shuffled =
-            [...q.words]
-            .sort(() => Math.random() - 0.5);
-
-        shuffled.forEach(word => {
-
-            const button =
-                document.createElement("button");
-
-            button.className = "answer-button";
-
-            button.textContent = word;
-
-            button.onclick = () =>
-                chooseWord(word);
-
-            answers.appendChild(button);
-        });
-    }
-
-
-    /* WRITING */
-
-    if (q.type === "writing") {
-
-        const input =
-            document.createElement("input");
-
-        input.id = "writingAnswer";
-
-        input.placeholder =
-            "Write your answer here...";
-
-        input.style.width = "90%";
-        input.style.padding = "16px";
-        input.style.margin = "20px";
-        input.style.borderRadius = "10px";
-        input.style.border = "2px solid #d2ad43";
-        input.style.background = "#062f25";
-        input.style.color = "white";
-        input.style.fontSize = "18px";
-
-        answers.appendChild(input);
-
-
-        const button =
-            document.createElement("button");
-
-        button.className = "answer-button";
-
-        button.textContent = "CHECK ANSWER";
-
-        button.onclick = checkWriting;
-
-        answers.appendChild(button);
-    }
-
-
-    updateGameInfo();
+    answerInput.focus();
 }
 
 
-/* =====================================================
-   CHECK ANSWER
-===================================================== */
+/* =========================================================
+   SUBMIT ANSWER
+========================================================= */
 
-function checkAnswer(selected) {
+function submitAnswer() {
 
-    const q =
-        gameQuestions[currentQuestion];
+    if (!canAnswer) {
 
-    totalAnswered++;
+        return;
+
+    }
 
 
-    if (selected === q.answer) {
+    if (gameEnded) {
+
+        return;
+
+    }
+
+
+    const input =
+        document.getElementById(
+            "answerInput"
+        );
+
+
+    const userAnswer =
+        normalizeAnswer(
+            input.value
+        );
+
+
+    if (
+        userAnswer === ""
+    ) {
+
+        return;
+
+    }
+
+
+    const question =
+        questions[
+            currentQuestion
+        ];
+
+
+    const isCorrect =
+        question.answers.some(
+            answer =>
+                normalizeAnswer(
+                    answer
+                ) === userAnswer
+        );
+
+
+    canAnswer = false;
+
+
+    if (isCorrect) {
 
         correctAnswer();
 
     } else {
 
         wrongAnswer();
+
     }
 }
 
 
-/* =====================================================
-   CORRECT
-===================================================== */
+/* =========================================================
+   NORMALIZE
+========================================================= */
 
-function correctAnswer() {
+function normalizeAnswer(
+    answer
+) {
 
-    const feedback =
-        document.getElementById("feedback");
-
-    totalCorrect++;
-
-    streak++;
-
-    bestStreak =
-        Math.max(bestStreak, streak);
-
-
-    let points = 100;
-
-    points += streak * 20;
-
-    score += points;
-
-
-    feedback.textContent =
-        `CORRECT! +${points} POINTS`;
-
-    feedback.style.color = "#b8dc77";
-
-
-    updateGameInfo();
-
-    nextQuestionAfterDelay();
+    return answer
+        .toLowerCase()
+        .trim()
+        .replace(
+            /[.!?,]/g,
+            ""
+        )
+        .replace(
+            /\s+/g,
+            " "
+        );
 }
 
 
-/* =====================================================
-   WRONG
-===================================================== */
+/* =========================================================
+   CORRECT
+========================================================= */
 
-function wrongAnswer() {
+function correctAnswer() {
+
+    score += 100;
+
+    correctAnswers++;
+
+
+    updateScore();
+
 
     const feedback =
-        document.getElementById("feedback");
-
-    lives--;
-
-    streak = 0;
+        document.getElementById(
+            "feedback"
+        );
 
 
     feedback.textContent =
-        "WRONG ANSWER";
-
-    feedback.style.color = "#e6a16c";
+        "CORRECT!";
 
 
-    updateGameInfo();
+    setTimeout(() => {
+
+        if (gameEnded) {
+
+            return;
+
+        }
+
+
+        currentQuestion++;
+
+
+        showQuestion();
+
+    }, 800);
+}
+
+
+/* =========================================================
+   WRONG
+========================================================= */
+
+function wrongAnswer() {
+
+    lives--;
+
+
+    updateLives();
+
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
+
+
+    feedback.textContent =
+        "TRY AGAIN!";
 
 
     if (lives <= 0) {
@@ -754,198 +969,89 @@ function wrongAnswer() {
 
         }, 700);
 
+
         return;
+
     }
 
-
-    nextQuestionAfterDelay();
-}
-
-
-/* =====================================================
-   NEXT QUESTION
-===================================================== */
-
-function nextQuestionAfterDelay() {
 
     setTimeout(() => {
 
+        if (gameEnded) {
+
+            return;
+
+        }
+
+
         currentQuestion++;
 
-        if (
-            currentQuestion >=
-            gameQuestions.length
-        ) {
 
-            endGame();
+        showQuestion();
 
-        } else {
-
-            showQuestion();
-        }
-
-    }, 850);
+    }, 900);
 }
 
 
-/* =====================================================
-   WRITING
-===================================================== */
+/* =========================================================
+   LIVES
+========================================================= */
 
-function checkWriting() {
+function updateLives() {
 
-    const q =
-        gameQuestions[currentQuestion];
-
-    const input =
-        document.getElementById("writingAnswer");
-
-    if (!input) return;
-
-
-    totalAnswered++;
-
-
-    const userAnswer =
-        input.value
-        .trim()
-        .toLowerCase()
-        .replace(/[.!?]/g, "");
-
-
-    const correct =
-        q.answer
-        .trim()
-        .toLowerCase()
-        .replace(/[.!?]/g, "");
-
-
-    if (userAnswer === correct) {
-
-        correctAnswer();
-
-    } else {
-
-        wrongAnswer();
-    }
+    document.getElementById(
+        "lives"
+    ).textContent =
+        lives;
 }
 
 
-/* =====================================================
-   WORD ORDER
-===================================================== */
+/* =========================================================
+   SCORE
+========================================================= */
 
-let selectedWords = [];
+function updateScore() {
 
-
-function chooseWord(word) {
-
-    selectedWords.push(word);
-
-
-    const buttons =
-        document.querySelectorAll(".answer-button");
-
-    buttons.forEach(button => {
-
-        if (button.textContent === word) {
-
-            button.disabled = true;
-
-            button.style.opacity = "0.4";
-        }
-
-    });
-
-
-    if (
-        selectedWords.length ===
-        gameQuestions[currentQuestion].words.length
-    ) {
-
-        const q =
-            gameQuestions[currentQuestion];
-
-        totalAnswered++;
-
-
-        const sentence =
-            selectedWords.join(" ");
-
-
-        if (
-            sentence.toLowerCase() ===
-            q.answer.toLowerCase()
-        ) {
-
-            selectedWords = [];
-
-            correctAnswer();
-
-        } else {
-
-            selectedWords = [];
-
-            wrongAnswer();
-        }
-    }
+    document.getElementById(
+        "score"
+    ).textContent =
+        score;
 }
 
 
-/* =====================================================
-   LISTENING
-===================================================== */
-
-function speakSentence(sentence) {
-
-    if (!("speechSynthesis" in window)) {
-        return;
-    }
-
-
-    window.speechSynthesis.cancel();
-
-
-    const speech =
-        new SpeechSynthesisUtterance(sentence);
-
-    speech.lang = "en-US";
-
-    speech.rate = 0.8;
-
-    speech.pitch = 1;
-
-
-    window.speechSynthesis.speak(speech);
-}
-
-
-/* =====================================================
+/* =========================================================
    TIMER
-===================================================== */
+========================================================= */
 
 function startTimer() {
 
-    clearInterval(timerInterval);
-
-    timer = 60;
-
-    updateTimer();
+    stopTimer();
 
 
-    timerInterval =
+    timer =
         setInterval(() => {
 
-            timer--;
+            if (gameEnded) {
+
+                stopTimer();
+
+                return;
+
+            }
+
+
+            timeLeft--;
+
 
             updateTimer();
 
 
-            if (timer <= 0) {
-
-                clearInterval(timerInterval);
+            if (
+                timeLeft <= 0
+            ) {
 
                 timeUp();
+
             }
 
         }, 1000);
@@ -954,288 +1060,457 @@ function startTimer() {
 
 function updateTimer() {
 
-    const fill =
-        document.getElementById("timerFill");
+    const timerText =
+        document.getElementById(
+            "timerText"
+        );
+
+
+    const timerFill =
+        document.getElementById(
+            "timerFill"
+        );
+
+
+    if (!timerText || !timerFill) {
+
+        return;
+
+    }
+
+
+    timerText.textContent =
+        timeLeft;
 
 
     const percentage =
-        (timer / 60) * 100;
+        (timeLeft / 60) * 100;
 
 
-    fill.style.width =
+    timerFill.style.width =
         `${percentage}%`;
+}
 
 
-    if (timer <= 15) {
+function stopTimer() {
 
-        fill.style.background =
-            "#b85c3f";
+    if (timer !== null) {
 
-    } else if (timer <= 30) {
+        clearInterval(timer);
 
-        fill.style.background =
-            "#d3a83c";
+        timer = null;
 
-    } else {
-
-        fill.style.background =
-            "#4f8b53";
     }
 }
 
 
 function timeUp() {
 
-    clearInterval(timerInterval);
+    if (gameEnded) {
 
-    const feedback =
-        document.getElementById("feedback");
+        return;
 
-    feedback.textContent =
-        "TIME IS UP!";
-
-    feedback.style.color =
-        "#e6a16c";
+    }
 
 
-    setTimeout(() => {
-
-        endGame();
-
-    }, 900);
+    endGame();
 }
 
 
-/* =====================================================
+/* =========================================================
+   LISTENING
+========================================================= */
+
+function playListening() {
+
+    const question =
+        questions[
+            currentQuestion
+        ];
+
+
+    if (!question) {
+
+        return;
+
+    }
+
+
+    if (
+        question.type !==
+        "listening"
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        !("speechSynthesis" in window)
+    ) {
+
+        alert(
+            "Your browser does not support listening."
+        );
+
+        return;
+
+    }
+
+
+    window.speechSynthesis.cancel();
+
+
+    const speech =
+        new SpeechSynthesisUtterance(
+            question.sentence
+        );
+
+
+    speech.lang =
+        "en-US";
+
+
+    speech.rate =
+        0.75;
+
+
+    speech.pitch =
+        1;
+
+
+    window.speechSynthesis.speak(
+        speech
+    );
+}
+
+
+/* =========================================================
    END GAME
-===================================================== */
+========================================================= */
 
 function endGame() {
 
-    clearInterval(timerInterval);
+    if (gameEnded) {
+
+        return;
+
+    }
+
+
+    gameEnded = true;
+
+
+    stopTimer();
+
 
     if (
         "speechSynthesis" in window
     ) {
+
         window.speechSynthesis.cancel();
+
     }
 
 
-    const accuracy =
-        totalAnswered > 0
+    const percentage =
+        totalQuestions > 0
             ? Math.round(
-                (totalCorrect / totalAnswered) * 100
+                (
+                    correctAnswers /
+                    totalQuestions
+                ) * 100
             )
             : 0;
 
 
-    const rank =
+    document.getElementById(
+        "finalScore"
+    ).textContent =
+        score;
+
+
+    document.getElementById(
+        "finalCorrect"
+    ).textContent =
+        `${correctAnswers} / ${totalQuestions}`;
+
+
+    document.getElementById(
+        "finalPercentage"
+    ).textContent =
+        `${percentage}%`;
+
+
+    document.getElementById(
+        "finalRank"
+    ).textContent =
         getRank(score);
 
 
-    document.getElementById("finalScore")
-        .textContent = score;
+    const resultMessage =
+        document.getElementById(
+            "resultMessage"
+        );
 
 
-    document.getElementById("finalCorrect")
-        .textContent =
-            `Correct answers: ${totalCorrect}/${totalAnswered}`;
+    if (lives <= 0) {
 
+        resultMessage.textContent =
+            "YOU LOST ALL YOUR LIVES.";
 
-    document.getElementById("finalAccuracy")
-        .textContent =
-            `Accuracy: ${accuracy}%`;
+    } else if (
+        timeLeft <= 0
+    ) {
 
-
-    document.getElementById("finalStreak")
-        .textContent =
-            `Best streak: ${bestStreak}`;
-
-
-    document.getElementById("finalRank")
-        .textContent = rank;
-
-
-    let message;
-
-
-    if (accuracy >= 90) {
-
-        message =
-            "Outstanding! Your Passive Voice is excellent.";
-
-    } else if (accuracy >= 70) {
-
-        message =
-            "Great job! Keep practicing your Passive Voice.";
-
-    } else if (accuracy >= 50) {
-
-        message =
-            "Good effort! You are getting better.";
+        resultMessage.textContent =
+            "TIME IS UP.";
 
     } else {
 
-        message =
-            "Keep practicing. You can improve your English!";
+        resultMessage.textContent =
+            "MISSION COMPLETE!";
+
     }
 
 
-    document.getElementById("finalMessage")
-        .textContent = message;
-
-
     saveGame(
-        accuracy,
-        rank
+        percentage
     );
 
 
-    updateLeaderboard(
-        score
+    updateLeaderboard();
+
+
+    showScreen(
+        "resultScreen"
     );
-
-
-    hideAllScreens();
-
-    document.getElementById("resultScreen")
-        .classList.remove("hidden");
 }
 
 
-/* =====================================================
+/* =========================================================
    RANK
-===================================================== */
+========================================================= */
 
 function getRank(score) {
 
-    if (score >= 2500)
-        return "ENGLISH LEGEND";
+    if (score >= 1500) {
 
-    if (score >= 2000)
         return "ENGLISH MASTER";
 
-    if (score >= 1500)
-        return "GRAMMAR PRO";
+    }
 
-    if (score >= 1000)
-        return "WORD EXPLORER";
 
-    if (score >= 500)
+    if (score >= 1000) {
+
+        return "ENGLISH PRO";
+
+    }
+
+
+    if (score >= 700) {
+
+        return "ENGLISH EXPLORER";
+
+    }
+
+
+    if (score >= 400) {
+
         return "ENGLISH STUDENT";
+
+    }
+
 
     return "BEGINNER";
 }
 
 
-/* =====================================================
+/* =========================================================
    SAVE GAME
-===================================================== */
+========================================================= */
 
 function saveGame(
-    accuracy,
-    rank
+    percentage
 ) {
 
     const games =
         JSON.parse(
             localStorage.getItem(
                 "pawsVsRobotsGames"
-            )
-        ) || [];
+            ) || "[]"
+        );
 
 
-    games.push({
+    const gameData = {
 
-        player: playerName,
+        player:
+            playerName,
 
-        pet: selectedPet,
+        pet:
+            selectedPet,
 
-        difficulty: difficulty,
+        difficulty:
+            difficulty,
 
-        score: score,
+        score:
+            score,
 
-        accuracy: accuracy,
+        correct:
+            correctAnswers,
 
-        rank: rank,
+        total:
+            totalQuestions,
 
-        date: new Date()
-            .toLocaleDateString()
+        percentage:
+            percentage,
 
-    });
+        rank:
+            getRank(score),
+
+        date:
+            new Date()
+                .toLocaleString()
+
+    };
+
+
+    games.push(
+        gameData
+    );
 
 
     localStorage.setItem(
         "pawsVsRobotsGames",
-        JSON.stringify(games)
+        JSON.stringify(
+            games
+        )
     );
 }
 
 
-/* =====================================================
-   SAVED DATA
-===================================================== */
+/* =========================================================
+   LEADERBOARD
+========================================================= */
 
-function loadSaved() {
-
-    const container =
-        document.getElementById(
-            "savedContent"
-        );
-
+function updateLeaderboard() {
 
     const games =
         JSON.parse(
             localStorage.getItem(
                 "pawsVsRobotsGames"
+            ) || "[]"
+        );
+
+
+    const leaderboard =
+        games
+            .sort(
+                (a, b) =>
+                    b.score -
+                    a.score
             )
-        ) || [];
+            .slice(
+                0,
+                10
+            );
 
 
-    if (games.length === 0) {
+    localStorage.setItem(
+        "pawsVsRobotsLeaderboard",
+        JSON.stringify(
+            leaderboard
+        )
+    );
+}
+
+
+function showLeaderboard() {
+
+    const container =
+        document.getElementById(
+            "leaderboardContent"
+        );
+
+
+    const leaderboard =
+        JSON.parse(
+            localStorage.getItem(
+                "pawsVsRobotsLeaderboard"
+            ) || "[]"
+        );
+
+
+    if (
+        leaderboard.length === 0
+    ) {
 
         container.innerHTML =
-            `<p>No saved games yet.</p>`;
+            "<p>No scores yet.</p>";
+
+        showScreen(
+            "leaderboardScreen"
+        );
 
         return;
+
     }
 
 
     container.innerHTML = "";
 
 
-    [...games]
-        .reverse()
-        .forEach(game => {
+    leaderboard.forEach(
+        (player, index) => {
 
-            const box =
-                document.createElement("div");
-
-            box.className =
-                "data-box";
+            const row =
+                document.createElement(
+                    "div"
+                );
 
 
-            box.innerHTML = `
-                <strong>${game.player}</strong><br>
-                Companion: ${game.pet}<br>
-                Difficulty: ${game.difficulty.toUpperCase()}<br>
-                Score: ${game.score}<br>
-                Accuracy: ${game.accuracy}%<br>
-                Rank: ${game.rank}<br>
-                Date: ${game.date}
+            row.className =
+                "leaderboard-row";
+
+
+            row.innerHTML = `
+
+                <strong>
+                    ${index + 1}.
+                </strong>
+
+                ${escapeHTML(
+                    player.player
+                )}
+
+                <span>
+                    ${player.score}
+                    POINTS
+                </span>
+
             `;
 
 
-            container.appendChild(box);
-        });
+            container.appendChild(
+                row
+            );
+
+        }
+    );
+
+
+    showScreen(
+        "leaderboardScreen"
+    );
 }
 
 
-/* =====================================================
+/* =========================================================
    STATISTICS
-===================================================== */
+========================================================= */
 
-function loadStatistics() {
+function showStatistics() {
 
     const container =
         document.getElementById(
@@ -1247,16 +1522,23 @@ function loadStatistics() {
         JSON.parse(
             localStorage.getItem(
                 "pawsVsRobotsGames"
-            )
-        ) || [];
+            ) || "[]"
+        );
 
 
-    if (games.length === 0) {
+    if (
+        games.length === 0
+    ) {
 
         container.innerHTML =
-            `<p>No statistics yet.</p>`;
+            "<p>No games played yet.</p>";
+
+        showScreen(
+            "statisticsScreen"
+        );
 
         return;
+
     }
 
 
@@ -1264,202 +1546,374 @@ function loadStatistics() {
         games.length;
 
 
-    const averageAccuracy =
-        Math.round(
-            games.reduce(
-                (sum, game) =>
-                    sum + game.accuracy,
-                0
-            ) / totalGames
+    const totalCorrect =
+        games.reduce(
+            (sum, game) =>
+                sum +
+                game.correct,
+            0
         );
+
+
+    const totalQuestionsPlayed =
+        games.reduce(
+            (sum, game) =>
+                sum +
+                game.total,
+            0
+        );
+
+
+    const averageAccuracy =
+        totalQuestionsPlayed > 0
+            ? Math.round(
+                (
+                    totalCorrect /
+                    totalQuestionsPlayed
+                ) * 100
+            )
+            : 0;
 
 
     const bestScore =
         Math.max(
             ...games.map(
-                game => game.score
+                game =>
+                    game.score
             )
-        );
-
-
-    const bestGame =
-        games.find(
-            game =>
-                game.score === bestScore
         );
 
 
     container.innerHTML = `
 
-        <div class="data-box">
-            <strong>TOTAL GAMES</strong>
-            <h2>${totalGames}</h2>
+        <div class="statistics-line">
+
+            <span>
+                GAMES PLAYED
+            </span>
+
+            <strong>
+                ${totalGames}
+            </strong>
+
         </div>
 
-        <div class="data-box">
-            <strong>AVERAGE ACCURACY</strong>
-            <h2>${averageAccuracy}%</h2>
+
+        <div class="statistics-line">
+
+            <span>
+                TOTAL CORRECT
+            </span>
+
+            <strong>
+                ${totalCorrect}
+            </strong>
+
         </div>
 
-        <div class="data-box">
-            <strong>BEST SCORE</strong>
-            <h2>${bestScore}</h2>
+
+        <div class="statistics-line">
+
+            <span>
+                AVERAGE ACCURACY
+            </span>
+
+            <strong>
+                ${averageAccuracy}%
+            </strong>
+
         </div>
 
-        <div class="data-box">
-            <strong>BEST RANK</strong>
-            <h2>${bestGame.rank}</h2>
+
+        <div class="statistics-line">
+
+            <span>
+                BEST SCORE
+            </span>
+
+            <strong>
+                ${bestScore}
+            </strong>
+
         </div>
+
     `;
-}
 
 
-/* =====================================================
-   LEADERBOARD
-===================================================== */
-
-function getLeaderboard() {
-
-    const saved =
-        JSON.parse(
-            localStorage.getItem(
-                "pawsVsRobotsLeaderboard"
-            )
-        );
-
-
-    if (saved) {
-
-        return saved;
-    }
-
-
-    return [
-
-        {
-            name: "Emily",
-            score: 2850
-        },
-
-        {
-            name: "Lucas",
-            score: 2470
-        },
-
-        {
-            name: "Sofia",
-            score: 2180
-        },
-
-        {
-            name: "Mateo",
-            score: 1950
-        },
-
-        {
-            name: "Olivia",
-            score: 1720
-        },
-
-        {
-            name: "Noah",
-            score: 1480
-        },
-
-        {
-            name: "Emma",
-            score: 1210
-        },
-
-        {
-            name: "Daniel",
-            score: 980
-        }
-
-    ];
-}
-
-
-function updateLeaderboard(newScore) {
-
-    let leaderboard =
-        getLeaderboard();
-
-
-    leaderboard.push({
-
-        name: playerName,
-
-        score: newScore
-
-    });
-
-
-    leaderboard.sort(
-        (a, b) =>
-            b.score - a.score
-    );
-
-
-    leaderboard =
-        leaderboard.slice(0, 10);
-
-
-    localStorage.setItem(
-        "pawsVsRobotsLeaderboard",
-        JSON.stringify(leaderboard)
+    showScreen(
+        "statisticsScreen"
     );
 }
 
 
-function loadLeaderboard() {
+/* =========================================================
+   SAVED DATA
+========================================================= */
+
+function showSavedData() {
 
     const container =
         document.getElementById(
-            "leaderboardContent"
+            "savedDataContent"
         );
 
 
-    const leaderboard =
-        getLeaderboard();
+    const games =
+        JSON.parse(
+            localStorage.getItem(
+                "pawsVsRobotsGames"
+            ) || "[]"
+        );
 
 
-    container.innerHTML = "";
+    if (
+        games.length === 0
+    ) {
+
+        container.innerHTML =
+            "<p>No saved data.</p>";
+
+        showScreen(
+            "savedScreen"
+        );
+
+        return;
+
+    }
 
 
-    leaderboard.forEach(
-        (player, index) => {
-
-            const row =
-                document.createElement("div");
-
-            row.className =
-                "leader-row";
+    const lastGame =
+        games[
+            games.length - 1
+        ];
 
 
-            row.innerHTML = `
-                <span>
-                    #${index + 1}
-                    ${player.name}
-                </span>
+    container.innerHTML = `
 
-                <strong>
-                    ${player.score}
-                </strong>
-            `;
+        <p>
+            PLAYER:
+            <strong>
+                ${escapeHTML(
+                    lastGame.player
+                )}
+            </strong>
+        </p>
 
 
-            container.appendChild(row);
-        }
+        <p>
+            PET:
+            <strong>
+                ${escapeHTML(
+                    lastGame.pet
+                )}
+            </strong>
+        </p>
+
+
+        <p>
+            DIFFICULTY:
+            <strong>
+                ${escapeHTML(
+                    lastGame.difficulty
+                )}
+            </strong>
+        </p>
+
+
+        <p>
+            SCORE:
+            <strong>
+                ${lastGame.score}
+            </strong>
+        </p>
+
+
+        <p>
+            ACCURACY:
+            <strong>
+                ${lastGame.percentage}%
+            </strong>
+        </p>
+
+
+        <p>
+            RANK:
+            <strong>
+                ${escapeHTML(
+                    lastGame.rank
+                )}
+            </strong>
+        </p>
+
+    `;
+
+
+    showScreen(
+        "savedScreen"
     );
 }
 
 
-/* =====================================================
-   INITIAL STATE
-===================================================== */
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-hideAllScreens();
+function escapeHTML(text) {
 
-document.getElementById("coverScreen")
-    .classList.remove("hidden");
+    return String(text)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   ENTER = CHECK ANSWER
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Enter" &&
+            document
+                .getElementById(
+                    "gameScreen"
+                )
+                .classList
+                .contains("active")
+        ) {
+
+            submitAnswer();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+function createParticles() {
+
+    const container =
+        document.getElementById(
+            "particles"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    for (
+        let i = 0;
+        i < 35;
+        i++
+    ) {
+
+        const particle =
+            document.createElement(
+                "div"
+            );
+
+
+        particle.className =
+            "particle";
+
+
+        particle.style.left =
+            `${Math.random() * 100}%`;
+
+
+        particle.style.animationDuration =
+            `${5 + Math.random() * 8}s`;
+
+
+        particle.style.animationDelay =
+            `${Math.random() * 8}s`;
+
+
+        container.appendChild(
+            particle
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD SETTINGS
+========================================================= */
+
+function loadSavedSettings() {
+
+    const savedDifficulty =
+        localStorage.getItem(
+            "pawsDifficulty"
+        );
+
+
+    if (
+        savedDifficulty &&
+        [
+            "easy",
+            "normal",
+            "medium",
+            "hard",
+            "extreme"
+        ].includes(
+            savedDifficulty
+        )
+    ) {
+
+        difficulty =
+            savedDifficulty;
+
+    }
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        loadSavedSettings();
+
+        createParticles();
+
+        updateLeaderboard();
+
+    }
+);
