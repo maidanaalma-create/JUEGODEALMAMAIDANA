@@ -409,27 +409,19 @@ function showInfo() {
 function showDifficulty() {
 
     const text =
-        document.getElementById(
-            "currentDifficulty"
-        );
-
+        document.getElementById( "currentDifficulty");
 
     if (text) {
 
-        text.textContent =
-            difficulty.toUpperCase();
-
+        text.textContent =difficulty.toUpperCase();
     }
-
 
     showScreen("difficultyScreen");
 }
 
-
 function setDifficulty(level) {
 
     difficulty = level;
-
 
     localStorage.setItem(
         "pawsDifficulty",
@@ -464,10 +456,7 @@ function showNameScreen() {
     setTimeout(() => {
 
         const input =
-            document.getElementById(
-                "playerNameInput"
-            );
-
+            document.getElementById("playerNameInput");
 
         if (input) {
 
@@ -478,14 +467,9 @@ function showNameScreen() {
     }, 300);
 }
 
-
 function continueToPets() {
 
-    const input =
-        document.getElementById(
-            "playerNameInput"
-        );
-
+    const input = document.getElementById("playerNameInput");
 
     const name =
         input.value.trim();
@@ -555,17 +539,10 @@ function startNewGame() {
         questions.length;
 
 
-    document.getElementById(
-        "gamePlayer"
-    ).textContent =
-        playerName;
+    document.getElementById("gamePlayer").textContent =playerName;
 
 
-    document.getElementById(
-        "gameLevel"
-    ).textContent =
-        difficulty.toUpperCase();
-
+    document.getElementById("gameLevel").textContent =difficulty.toUpperCase();
 
     updateScore();
 
@@ -573,9 +550,7 @@ function startNewGame() {
 
     updateTimer();
 
-
     showScreen("gameScreen");
-
 
     startTimer();
 
@@ -591,8 +566,7 @@ function getQuestionsForDifficulty() {
 
     const shuffled =
         shuffle(
-            [...questionPool]
-        );
+[...questionPool]);
 
 
     let amount = 10;
@@ -1012,10 +986,7 @@ function updateLives() {
 
 function updateScore() {
 
-    document.getElementById(
-        "score"
-    ).textContent =
-        score;
+    document.getElementById("score").textContent =score;
 }
 
 
@@ -1057,19 +1028,10 @@ function startTimer() {
         }, 1000);
 }
 
-
 function updateTimer() {
 
-    const timerText =
-        document.getElementById(
-            "timerText"
-        );
-
-
-    const timerFill =
-        document.getElementById(
-            "timerFill"
-        );
+    const timerText = document.getElementById( "timerText");
+    const timerFill =document.getElementById( "timerFill");
 
 
     if (!timerText || !timerFill) {
@@ -1077,7 +1039,6 @@ function updateTimer() {
         return;
 
     }
-
 
     timerText.textContent =
         timeLeft;
@@ -1087,8 +1048,7 @@ function updateTimer() {
         (timeLeft / 60) * 100;
 
 
-    timerFill.style.width =
-        `${percentage}%`;
+    timerFill.style.width = `${percentage}%`;
 }
 
 
@@ -1822,9 +1782,7 @@ document.addEventListener(
 function createParticles() {
 
     const container =
-        document.getElementById(
-            "particles"
-        );
+        document.getElementById("particles");
 
 
     if (!container) {
